@@ -486,13 +486,12 @@
 
     Slick.prototype.buildOut = function() {
 
-        var _ = this;
+        var _ = this, $existingTrack, $existingList;
 
         _.$slides =
             _.$slider
-                .children( _.options.slide + ':not(.slick-cloned)')
+                .find( _.options.slide + ':not(.slick-cloned)')
                 .addClass('slick-slide');
-
         _.slideCount = _.$slides.length;
 
         _.$slides.each(function(index, element) {
@@ -505,12 +504,25 @@
 
         _.$slider.addClass('slick-slider');
 
-        _.$slideTrack = (_.slideCount === 0) ?
-            $('<div class="slick-track"/>').appendTo(_.$slider) :
-            _.$slides.wrapAll('<div class="slick-track"/>').parent();
+        // If markup exists
+        $existingTrack = _.$slider.find('.slick-track').first();
+        $existingList = _.$slider.find('.slick-list').first();
 
-        _.$list = _.$slideTrack.wrap(
-            '<div aria-live="polite" class="slick-list"/>').parent();
+        if($existingTrack.length === 0) {
+            _.$slideTrack = (_.slideCount === 0) ?
+                $('<div class="slick-track"/>').appendTo(_.$slider) :
+                _.$slides.wrapAll('<div class="slick-track"/>').parent();
+        } else {
+            _.$slideTrack = $existingTrack;
+        }
+
+        if($existingList.length === 0) {
+            _.$list = _.$slideTrack.wrap(
+                '<div aria-live="polite" class="slick-list"/>').parent();
+        } else {
+            _.$list = $existingList;
+
+        }
         _.$slideTrack.css('opacity', 0);
 
         if (_.options.centerMode === true || _.options.swipeToSlide === true) {
